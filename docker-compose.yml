@@ -1,0 +1,16 @@
+services:
+  db:
+    image: postgres:16
+    container_name: sultan_nut_house_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: sultan
+      POSTGRES_PASSWORD: sultan_dev_password
+      POSTGRES_DB: sultan_nut_house
+    ports:
+      - "5433:5432"
+    volumes:
+      - sultan_nut_house_pgdata:/var/lib/postgresql/data
+
+volumes:
+  sultan_nut_house_pgdata:

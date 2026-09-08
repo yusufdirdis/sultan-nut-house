@@ -1,0 +1,37 @@
+@import "tailwindcss";
+
+:root {
+  /* Warm, editorial palette — premium Middle Eastern cafe + specialty retail. */
+  --color-cream: #faf6ee;
+  --color-cream-deep: #f1e9d8;
+  --color-espresso: #241c15;
+  --color-espresso-soft: #4a3f34;
+  --color-brass: #b3823f;
+  --color-brass-soft: #d9b877;
+  --color-pistachio: #5f7048;
+  --color-line: rgba(36, 28, 21, 0.12);
+}
+
+@theme inline {
+  --color-cream: var(--color-cream);
+  --color-cream-deep: var(--color-cream-deep);
+  --color-espresso: var(--color-espresso);
+  --color-espresso-soft: var(--color-espresso-soft);
+  --color-brass: var(--color-brass);
+  --color-brass-soft: var(--color-brass-soft);
+  --color-pistachio: var(--color-pistachio);
+  --color-line: var(--color-line);
+
+  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-inter);
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-espresso);
+  font-family: var(--font-sans);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
