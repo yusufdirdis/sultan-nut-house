@@ -435,8 +435,14 @@ model Order {
   shippingAddress         Address?               @relation("OrderShippingAddress", fields: [shippingAddressId], references: [id])
   shippingMethodId        String?
   shippingMethod          ShippingMethod?        @relation(fields: [shippingMethodId], references: [id])
+  /// Set when a live carrier rate (e.g. Shippo) was quoted at checkout,
+  /// rather than an admin-configured flat ShippingMethod.
+  shippingServiceName     String?
+  shippoRateId            String?
   trackingNumber          String?
   trackingCarrier         String?
+  trackingUrl             String?
+  labelUrl                String?
   toastOrderGuid          String?
   toastSubmissionStatus   ToastSubmissionStatus  @default(NOT_SUBMITTED)
   toastRetryCount         Int                    @default(0)
@@ -455,6 +461,10 @@ model Order {
   discounts               OrderDiscount[]
   placedAt                DateTime?
   notes                   String?
+  /// Plain reference (no FK) to the Cart this order was placed from, so the
+  /// Stripe webhook — which has no access to the customer's cookies — can
+  /// mark that cart CONVERTED once payment is confirmed.
+  sourceCartId            String?
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
 

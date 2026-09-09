@@ -11,6 +11,8 @@ const navLinks = [
   { href: "/admin/products", label: "Products" },
   { href: "/admin/categories", label: "Categories" },
   { href: "/admin/modifiers", label: "Modifiers" },
+  { href: "/admin/orders/shipping", label: "Shipping orders" },
+  { href: "/admin/orders/pickup", label: "Pickup orders" },
 ];
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {

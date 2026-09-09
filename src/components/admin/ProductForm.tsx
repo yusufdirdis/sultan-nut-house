@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { saveProduct } from "@/server/actions/admin-product-actions";
+import { uploadProductImageAction } from "@/server/actions/admin-upload-actions";
 import type { ProductInput } from "@/validation/admin-product";
 
 interface CategoryOption {
@@ -76,6 +77,9 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
   );
 
   const [images, setImages] = useState<ImageRow[]>(initialProduct?.images ?? []);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedModifierGroupIds, setSelectedModifierGroupIds] = useState<string[]>(
     initialProduct?.modifierGroupIds ?? [],
   );
@@ -109,6 +113,28 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
 
   function removeImage(index: number) {
     setImages((rows) => rows.filter((_, i) => i !== index));
+  }
+
+  async function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError(null);
+
+    const formData = new FormData();
+    formData.append("file", file);
+    const result = await uploadProductImageAction(formData);
+
+    setIsUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+
+    if (!result.success || !result.url) {
+      setUploadError(result.message ?? "Upload failed.");
+      return;
+    }
+
+    setImages((rows) => [...rows, { url: result.url!, altText: "" }]);
   }
 
   function toggleModifierGroup(id: string) {
@@ -326,14 +352,35 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
       </section>
 
       <section className="rounded-2xl border border-line bg-white p-6">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-xl text-espresso">Images</h2>
-          <Button type="button" variant="outline" onClick={() => setImages((rows) => [...rows, { url: "", altText: "" }])}>
-            Add image
-          </Button>
+          <div className="flex items-center gap-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              onChange={handleFileSelected}
+              disabled={isUploading}
+              className="hidden"
+              id="image-upload-input"
+            />
+            <Button
+              type="button"
+              variant="brass"
+              disabled={isUploading}
+              className="disabled:opacity-60"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              {isUploading ? "Uploading…" : "Upload image"}
+            </Button>
+            <Button type="button" variant="outline" onClick={() => setImages((rows) => [...rows, { url: "", altText: "" }])}>
+              Add image URL
+            </Button>
+          </div>
         </div>
+        {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}
         <p className="mt-1 text-sm text-espresso-soft">
-          Paste a hosted image URL for now (e.g. from the current site) — direct upload comes later.
+          Upload a file directly, or paste a hosted image URL (e.g. from the current site).
         </p>
         <div className="mt-5 flex flex-col gap-3">
           {images.map((image, index) => (
