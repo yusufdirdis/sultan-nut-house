@@ -18,3 +18,14 @@ export async function requireAdmin() {
 
   return session.user;
 }
+
+/** Guards every signed-in-customer server action (account/orders/addresses). */
+export async function requireUser() {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new AppError("Please sign in to do that.", "UNAUTHENTICATED");
+  }
+
+  return session.user;
+}

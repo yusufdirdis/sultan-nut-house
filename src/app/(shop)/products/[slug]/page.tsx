@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/shop/ProductCard";
 import { AddToCartForm } from "@/components/shop/AddToCartForm";
+import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { formatCentsRange } from "@/lib/money";
 
 async function getProduct(slug: string) {
@@ -60,7 +61,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               // eslint-disable-next-line @next/next/no-img-element
               <img src={product.images[0].url} alt={product.images[0].altText ?? product.name} className="h-full w-full object-cover" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-espresso-soft">No image yet</div>
+              <ImagePlaceholder />
             )}
           </div>
           {product.images.length > 1 && (

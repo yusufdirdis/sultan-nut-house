@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { formatCents } from "@/lib/money";
 import { removeCartItem, updateCartItemQuantity } from "@/server/actions/cart-actions";
+import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import type { FulfillmentChannel } from "@/generated/prisma/enums";
 
 export interface CartItemRowData {
@@ -41,9 +42,11 @@ export function CartItemRow({ channel, item }: { channel: FulfillmentChannel; it
   return (
     <div className="flex gap-4 border-b border-line py-5">
       <div className="h-20 w-20 shrink-0 overflow-hidden rounded-xl bg-cream-deep">
-        {item.imageUrl && (
+        {item.imageUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={item.imageUrl} alt={item.productName} className="h-full w-full object-cover" />
+        ) : (
+          <ImagePlaceholder />
         )}
       </div>
 

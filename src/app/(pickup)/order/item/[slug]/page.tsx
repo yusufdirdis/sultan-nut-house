@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
 import { ItemCustomizer } from "@/components/cafe/ItemCustomizer";
+import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 
 async function getMenuItem(slug: string) {
   return db.product.findUnique({
@@ -41,7 +42,7 @@ export default async function MenuItemPage({ params }: { params: Promise<{ slug:
             // eslint-disable-next-line @next/next/no-img-element
             <img src={product.images[0].url} alt={product.images[0].altText ?? product.name} className="h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-espresso-soft">No image yet</div>
+            <ImagePlaceholder />
           )}
         </div>
 

@@ -374,7 +374,7 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
               {isUploading ? "Uploading…" : "Upload image"}
             </Button>
             <Button type="button" variant="outline" onClick={() => setImages((rows) => [...rows, { url: "", altText: "" }])}>
-              Add image URL
+              Add URL instead
             </Button>
           </div>
         </div>

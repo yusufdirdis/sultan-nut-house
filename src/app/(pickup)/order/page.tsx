@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
+import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 
 export const metadata = { title: "Order Pickup" };
 
@@ -43,9 +44,11 @@ export default async function OrderMenuPage() {
                     className="flex gap-4 rounded-2xl border border-line bg-white p-4 transition-shadow hover:shadow-md"
                   >
                     <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-cream-deep">
-                      {product.images[0] && (
+                      {product.images[0] ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img src={product.images[0].url} alt={product.name} className="h-full w-full object-cover" />
+                      ) : (
+                        <ImagePlaceholder />
                       )}
                     </div>
                     <div>

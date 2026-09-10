@@ -128,8 +128,8 @@ export function ItemCustomizer({ variants, modifierGroups }: { variants: Variant
       {modifierGroups.map((group) => {
         const selectedIds = selections[group.id] ?? [];
         return (
-          <fieldset key={group.id}>
-            <legend className="flex items-baseline justify-between text-sm font-medium text-espresso">
+          <fieldset key={group.id} className="w-full">
+            <legend className="flex w-full items-baseline justify-between text-sm font-medium text-espresso">
               <span>
                 {group.name}
                 {group.required && <span className="ml-1 text-brass">*</span>}
