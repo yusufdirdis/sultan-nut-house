@@ -222,6 +222,7 @@ model Category {
   slug        String       @unique
   name        String
   description String?
+  imageUrl    String?
   parentId    String?
   parent      Category?    @relation("CategoryTree", fields: [parentId], references: [id])
   children    Category[]   @relation("CategoryTree")

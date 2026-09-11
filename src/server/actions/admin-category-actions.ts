@@ -22,12 +22,17 @@ export async function saveCategory(input: CategoryInput): Promise<ActionResult> 
       slug: parsed.slug,
       name: parsed.name,
       description: parsed.description || null,
+      imageUrl: parsed.imageUrl || null,
       isVisible: parsed.isVisible,
     };
 
-    const category = parsed.id
-      ? await db.category.update({ where: { id: parsed.id }, data })
-      : await db.category.create({ data });
+    let category;
+    if (parsed.id) {
+      category = await db.category.update({ where: { id: parsed.id }, data });
+    } else {
+      const last = await db.category.findFirst({ where: { kind: parsed.kind }, orderBy: { position: "desc" } });
+      category = await db.category.create({ data: { ...data, position: (last?.position ?? -1) + 1 } });
+    }
 
     await db.auditLog.create({
       data: {
@@ -43,6 +48,33 @@ export async function saveCategory(input: CategoryInput): Promise<ActionResult> 
     return { success: true, message: "Category saved." };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't save this category.");
+    return { success: false, message: safeError.userMessage };
+  }
+}
+
+export async function moveCategory(categoryId: string, direction: "up" | "down"): Promise<ActionResult> {
+  try {
+    await requireAdmin();
+
+    const category = await db.category.findUnique({ where: { id: categoryId } });
+    if (!category) throw new AppError("Category not found.", "CATEGORY_NOT_FOUND");
+
+    const neighbor = await db.category.findFirst({
+      where: { kind: category.kind, position: direction === "up" ? { lt: category.position } : { gt: category.position } },
+      orderBy: { position: direction === "up" ? "desc" : "asc" },
+    });
+
+    if (!neighbor) return { success: true, message: "Already at the edge." };
+
+    await db.$transaction([
+      db.category.update({ where: { id: category.id }, data: { position: neighbor.position } }),
+      db.category.update({ where: { id: neighbor.id }, data: { position: category.position } }),
+    ]);
+
+    revalidatePath("/admin/categories");
+    return { success: true, message: "Reordered." };
+  } catch (error) {
+    const safeError = toSafeError(error, "We couldn't reorder this category.");
     return { success: false, message: safeError.userMessage };
   }
 }

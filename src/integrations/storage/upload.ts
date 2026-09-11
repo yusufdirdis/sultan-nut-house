@@ -9,7 +9,7 @@ const MAX_SIZE_BYTES = 8 * 1024 * 1024;
 
 export { isR2Configured };
 
-export async function uploadProductImage(file: File): Promise<{ url: string }> {
+export async function uploadImage(file: File, folder: "products" | "categories" = "products"): Promise<{ url: string }> {
   if (!isR2Configured()) {
     throw new AppError("Image uploads aren't set up yet — paste an image URL instead.", "R2_NOT_CONFIGURED");
   }
@@ -23,7 +23,7 @@ export async function uploadProductImage(file: File): Promise<{ url: string }> {
   }
 
   const extension = file.type.split("/")[1];
-  const key = `products/${randomUUID()}.${extension}`;
+  const key = `${folder}/${randomUUID()}.${extension}`;
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   await getR2Client().send(

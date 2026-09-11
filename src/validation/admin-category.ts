@@ -11,6 +11,8 @@ export const categoryInputSchema = z.object({
     .regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, "Lowercase letters, numbers, and hyphens only"),
   name: z.string().trim().min(1, "Name is required"),
   description: z.string().trim().optional(),
+  imageUrl: z.string().trim().url("Enter a valid image URL").optional().or(z.literal("")),
+  position: z.number().int().default(0),
   isVisible: z.boolean().default(true),
 });
 

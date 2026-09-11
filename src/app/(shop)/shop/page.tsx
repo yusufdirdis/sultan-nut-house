@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/shop/ProductCard";
+import { CategoryCard } from "@/components/shop/CategoryCard";
 
 export const metadata = { title: "Shop" };
 
@@ -24,15 +24,9 @@ export default async function ShopPage() {
       </div>
 
       {categories.length > 0 && (
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-10 flex gap-5 overflow-x-auto pb-2">
           {categories.map((category) => (
-            <Link
-              key={category.id}
-              href={`/collections/${category.slug}`}
-              className="rounded-full border border-line px-4 py-2 text-sm font-medium text-espresso-soft transition-colors hover:border-brass hover:text-espresso"
-            >
-              {category.name}
-            </Link>
+            <CategoryCard key={category.id} slug={category.slug} name={category.name} imageUrl={category.imageUrl} />
           ))}
         </div>
       )}

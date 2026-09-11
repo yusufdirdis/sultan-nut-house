@@ -16,6 +16,8 @@ export default async function AdminCategoriesPage() {
             slug: c.slug,
             name: c.name,
             description: c.description ?? "",
+            imageUrl: c.imageUrl ?? "",
+            position: c.position,
             isVisible: c.isVisible,
           }))}
         />

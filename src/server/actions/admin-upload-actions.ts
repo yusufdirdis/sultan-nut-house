@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAdmin } from "@/lib/auth-guards";
-import { uploadProductImage, isR2Configured } from "@/integrations/storage/upload";
+import { uploadImage, isR2Configured } from "@/integrations/storage/upload";
 import { toSafeError } from "@/lib/errors";
 
 export interface UploadImageResult {
@@ -10,7 +10,7 @@ export interface UploadImageResult {
   message?: string;
 }
 
-export async function uploadProductImageAction(formData: FormData): Promise<UploadImageResult> {
+async function handleUpload(formData: FormData, folder: "products" | "categories"): Promise<UploadImageResult> {
   try {
     await requireAdmin();
 
@@ -19,12 +19,20 @@ export async function uploadProductImageAction(formData: FormData): Promise<Uplo
       return { success: false, message: "No file provided." };
     }
 
-    const { url } = await uploadProductImage(file);
+    const { url } = await uploadImage(file, folder);
     return { success: true, url };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't upload that image.");
     return { success: false, message: safeError.userMessage };
   }
+}
+
+export async function uploadProductImageAction(formData: FormData): Promise<UploadImageResult> {
+  return handleUpload(formData, "products");
+}
+
+export async function uploadCategoryImageAction(formData: FormData): Promise<UploadImageResult> {
+  return handleUpload(formData, "categories");
 }
 
 export async function checkImageUploadAvailable(): Promise<boolean> {
