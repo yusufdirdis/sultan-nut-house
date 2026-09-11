@@ -26,21 +26,27 @@ async function markOrderPaidAndFulfill(orderId: string, amountCents: number, str
     return;
   }
 
-  if (order.status !== "PENDING_PAYMENT") {
-    // Already handled (e.g. a retried webhook delivery before the
-    // WebhookEvent idempotency row landed) — do nothing further.
-    return;
-  }
-
-  await db.$transaction(async (tx) => {
-    await tx.order.update({
-      where: { id: order.id },
+  // Stripe fires both `checkout.session.completed` and the underlying
+  // `payment_intent.succeeded` for a Checkout Session payment, often within
+  // milliseconds of each other — both webhook deliveries reach us and both
+  // resolve this same orderId. A check-then-write on order.status here is a
+  // classic TOCTOU race (confirmed in testing: it double-decremented
+  // inventory and sent two confirmation emails for one order). The
+  // conditional `updateMany` below is the atomic guard: only the delivery
+  // that actually flips PENDING_PAYMENT -> PAID proceeds past it, because a
+  // concurrent transaction attempting the same updateMany blocks on the row
+  // lock and then matches zero rows once the first has committed.
+  const won = await db.$transaction(async (tx) => {
+    const { count } = await tx.order.updateMany({
+      where: { id: order.id, status: "PENDING_PAYMENT" },
       data: {
         status: "PAID",
         placedAt: new Date(),
         stripePaymentIntentId: stripePaymentIntentId ?? order.stripePaymentIntentId,
       },
     });
+
+    if (count === 0) return false;
 
     await tx.payment.create({
       data: {
@@ -68,9 +74,13 @@ async function markOrderPaidAndFulfill(orderId: string, amountCents: number, str
     if (order.sourceCartId) {
       await tx.cart.update({ where: { id: order.sourceCartId }, data: { status: "CONVERTED" } }).catch(() => undefined);
     }
+
+    return true;
   });
 
-  await sendOrderConfirmationEmail(order.id);
+  if (won) {
+    await sendOrderConfirmationEmail(order.id);
+  }
 }
 
 async function sendOrderConfirmationEmail(orderId: string) {
