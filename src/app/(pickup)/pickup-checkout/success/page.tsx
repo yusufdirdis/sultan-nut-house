@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { OrderConfirmationRefresher } from "@/components/checkout/OrderConfirmationRefresher";
 import { formatCents } from "@/lib/money";
 
 export default async function PickupCheckoutSuccessPage({ searchParams }: { searchParams: Promise<{ order?: string }> }) {
@@ -9,6 +10,7 @@ export default async function PickupCheckoutSuccessPage({ searchParams }: { sear
 
   return (
     <Container className="flex min-h-[60vh] items-center justify-center py-16 text-center">
+      <OrderConfirmationRefresher isPaid={order?.status === "PAID"} />
       <div className="max-w-md">
         <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brass">
           {order?.status === "PAID" ? "Order confirmed" : "Almost there"}
