@@ -3,9 +3,12 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { formatCents } from "@/lib/money";
 
+const ADMIN_ROLES = ["MANAGER", "ADMIN", "SUPERADMIN"];
+
 export default async function AccountOverviewPage() {
   const session = await auth();
   const userId = session!.user.id;
+  const isAdmin = ADMIN_ROLES.includes(session!.user.role);
 
   const [recentOrders, addressCount] = await Promise.all([
     db.order.findMany({
@@ -19,6 +22,19 @@ export default async function AccountOverviewPage() {
   return (
     <div>
       <h1 className="font-display text-3xl text-espresso">Welcome back{session?.user.name ? `, ${session.user.name.split(" ")[0]}` : ""}</h1>
+
+      {isAdmin && (
+        <Link
+          href="/admin"
+          className="mt-6 flex items-center justify-between rounded-2xl border border-brass/40 bg-brass/10 p-6 transition-shadow hover:shadow-md"
+        >
+          <div>
+            <p className="font-display text-lg text-espresso">Admin panel</p>
+            <p className="mt-1 text-sm text-espresso-soft">Manage products, categories, modifiers, and orders.</p>
+          </div>
+          <span className="text-brass">&rarr;</span>
+        </Link>
+      )}
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         <Link href="/account/orders" className="rounded-2xl border border-line bg-white p-6 transition-shadow hover:shadow-md">

@@ -2,8 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useSession } from "next-auth/react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+
+const ADMIN_ROLES = ["MANAGER", "ADMIN", "SUPERADMIN"];
 
 const navLinks = [
   { href: "/shop", label: "Shop" },
@@ -13,6 +16,8 @@ const navLinks = [
 
 export function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const { data: session } = useSession();
+  const isAdmin = Boolean(session?.user?.role && ADMIN_ROLES.includes(session.user.role));
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-cream/90 backdrop-blur">
@@ -30,6 +35,14 @@ export function SiteHeader() {
         </nav>
 
         <div className="hidden items-center gap-3 md:flex">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="rounded-full border border-espresso/20 px-4 py-2 text-sm font-medium text-espresso-soft transition-colors hover:border-espresso hover:text-espresso"
+            >
+              Admin
+            </Link>
+          )}
           <Link
             href="/account"
             aria-label="Account"
@@ -87,6 +100,15 @@ export function SiteHeader() {
             >
               Cart
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="rounded-lg px-3 py-3 text-base font-medium text-espresso-soft hover:bg-espresso/5"
+                onClick={() => setMenuOpen(false)}
+              >
+                Admin
+              </Link>
+            )}
             <Button href="/order" variant="brass" size="lg" className="mt-2 w-full">
               Order Pickup
             </Button>
