@@ -649,6 +649,25 @@ model ShippingMethod {
   updatedAt        DateTime @updatedAt
 }
 
+/// Curated Google review snippets shown on the homepage, admin-managed —
+/// deliberately not pulled live from Google's Places API, which only
+/// surfaces whichever reviews Google decides are "most relevant" and has no
+/// reliable way to deep-link to one specific review. googleReviewUrl comes
+/// from Google Maps' own "Share review" link on the original review.
+model Review {
+  id             String   @id @default(cuid())
+  authorName     String
+  rating         Int
+  body           String
+  googleReviewUrl String
+  isVisible      Boolean  @default(true)
+  position       Int      @default(0)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([isVisible, position])
+}
+
 // ---------------------------------------------------------------------------
 // Toast integration — one-way sync (Toast -> our mapping table). Our internal
 // IDs are never Toast-dependent; see /src/integrations/toast.

@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { ReviewsCarousel } from "@/components/marketing/ReviewsCarousel";
+import { db } from "@/lib/db";
 
 const categories = [
   { slug: "nuts", name: "Shop Nuts", blurb: "Slow-roasted, small-batch." },
@@ -9,7 +11,9 @@ const categories = [
   { slug: "tea-coffee", name: "Tea & Coffee", blurb: "Turkish coffee, loose-leaf tea." },
 ];
 
-export default function Home() {
+export default async function Home() {
+  const reviews = await db.review.findMany({ where: { isVisible: true }, orderBy: { position: "asc" } });
+
   return (
     <>
       {/* ------------------------------------------------------------- Hero */}
@@ -151,6 +155,18 @@ export default function Home() {
           />
         </Container>
       </section>
+
+      {/* --------------------------------------------------------- Reviews */}
+      {reviews.length > 0 && (
+        <section className="border-t border-line bg-cream-deep py-24">
+          <Container>
+            <p className="text-center text-xs font-semibold uppercase tracking-[0.25em] text-brass">What guests are saying</p>
+            <div className="mt-10">
+              <ReviewsCarousel reviews={reviews} />
+            </div>
+          </Container>
+        </section>
+      )}
     </>
   );
 }
