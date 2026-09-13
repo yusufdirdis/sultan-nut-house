@@ -50,7 +50,14 @@ export async function saveModifierGroup(input: ModifierGroupInput): Promise<Acti
       }
 
       if (removableOptions.length > 0) {
-        await tx.modifierOption.deleteMany({ where: { id: { in: removableOptions.map((o) => o.id) } } });
+        const removableOptionIds = removableOptions.map((o) => o.id);
+        // Carts are transient — unlike OrderItemModifier (a permanent record,
+        // guarded above), a live CartItemModifier can reference this option
+        // too (e.g. an abandoned cart) and has no cascade. Clear those
+        // selections rather than blocking the admin from editing the menu;
+        // the cart re-validates required modifiers at checkout anyway.
+        await tx.cartItemModifier.deleteMany({ where: { modifierOptionId: { in: removableOptionIds } } });
+        await tx.modifierOption.deleteMany({ where: { id: { in: removableOptionIds } } });
       }
 
       for (const [index, option] of parsed.options.entries()) {

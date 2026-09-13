@@ -94,7 +94,14 @@ export async function saveProduct(input: ProductInput): Promise<ActionResult & {
       }
 
       if (removableVariants.length > 0) {
-        await tx.productVariant.deleteMany({ where: { id: { in: removableVariants.map((v) => v.id) } } });
+        const removableVariantIds = removableVariants.map((v) => v.id);
+        // Carts are transient — unlike OrderItem (a permanent record, guarded
+        // above), a live CartItem can reference this variant too (e.g. an
+        // abandoned cart) and has no cascade. Drop those cart items rather
+        // than blocking the admin from editing the catalog; cascades clean
+        // up their modifiers/reservations.
+        await tx.cartItem.deleteMany({ where: { productVariantId: { in: removableVariantIds } } });
+        await tx.productVariant.deleteMany({ where: { id: { in: removableVariantIds } } });
       }
 
       for (const [index, variant] of parsed.variants.entries()) {
