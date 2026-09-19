@@ -4,7 +4,9 @@ import type { LabelRequest, RateRequest, ShippingLabel, ShippingProvider, Shippi
 
 const SHIPPO_BASE_URL = "https://api.goshippo.com";
 
-// Sultan Nut House's own address — every shipment ships from here.
+// Sultan Nut House's own address — every shipment ships from here. USPS
+// rejects label purchases without a sender phone/email, so both are
+// required here even though Shippo's address schema marks them optional.
 const SHIP_FROM_ADDRESS = {
   name: "Sultan Nut House",
   street1: "1836 N University Dr",
@@ -12,6 +14,8 @@ const SHIP_FROM_ADDRESS = {
   state: "FL",
   zip: "33322",
   country: "US",
+  phone: "9545335759",
+  email: "sultannuthouse@gmail.com",
 };
 
 // No per-product dimensions are tracked yet, so every shipment uses this
