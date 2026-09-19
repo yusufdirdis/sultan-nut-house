@@ -46,6 +46,15 @@ function slugify(value: string) {
     .replace(/^-+|-+$/g, "");
 }
 
+// Pickup-only items have no shipping label or external inventory system to
+// key off a SKU, so there's nothing for an admin to meaningfully type here —
+// derive one from the product/variant names and let it stay editable for
+// anyone who does want to set a real SKU (e.g. shop items headed to Shippo).
+function generateSku(productSlug: string, variantName: string) {
+  const base = slugify(`${productSlug}-${variantName}`).toUpperCase();
+  return base || `SKU-${Date.now().toString(36).toUpperCase()}`;
+}
+
 function emptyVariant(isDefault: boolean): VariantRow {
   return { sku: "", name: "", priceCents: 0, priceDollars: "", compareAtDollars: "", isDefault, isAvailable: true };
 }
@@ -155,7 +164,7 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
       storageInstructions,
       variants: variants.map((variant) => ({
         id: variant.id,
-        sku: variant.sku,
+        sku: variant.sku.trim() || generateSku(slug, variant.name),
         name: variant.name,
         priceCents: dollarsToCents(variant.priceDollars),
         compareAtPriceCents: variant.compareAtDollars ? dollarsToCents(variant.compareAtDollars) : null,
@@ -299,8 +308,8 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
               </div>
               <TextField
                 id={`variant-${index}-sku`}
-                label="SKU"
-                required
+                label="SKU (optional)"
+                placeholder="Auto-generated"
                 value={variant.sku}
                 onChange={(event) => updateVariant(index, { sku: event.target.value })}
               />

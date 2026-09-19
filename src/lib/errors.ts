@@ -25,6 +25,15 @@ function isPrismaForeignKeyError(error: unknown): boolean {
   );
 }
 
+function isPrismaUniqueConstraintError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
+
 export function toSafeError(error: unknown, fallback = "Something went wrong. Please try again."): AppError {
   if (error instanceof AppError) return error;
 
@@ -35,6 +44,10 @@ export function toSafeError(error: unknown, fallback = "Something went wrong. Pl
   // least explain *why* it failed instead of a fully generic message.
   if (isPrismaForeignKeyError(error)) {
     return new AppError("This can't be removed because something else still references it.", "FOREIGN_KEY_CONSTRAINT", error);
+  }
+
+  if (isPrismaUniqueConstraintError(error)) {
+    return new AppError("That SKU is already used by another variant — set a different one and try again.", "UNIQUE_CONSTRAINT", error);
   }
 
   return new AppError(fallback, "INTERNAL_ERROR", error);
