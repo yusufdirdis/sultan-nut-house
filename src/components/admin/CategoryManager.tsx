@@ -1,10 +1,11 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState, type ChangeEvent } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
+import { ImageDropzone } from "@/components/ui/ImageDropzone";
 import { deleteCategory, moveCategory, saveCategory } from "@/server/actions/admin-category-actions";
 import { uploadCategoryImageAction } from "@/server/actions/admin-upload-actions";
 import type { CategoryInput } from "@/validation/admin-category";
@@ -39,7 +40,6 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const menuCategories = categories.filter((c) => c.kind === "MENU").sort((a, b) => a.position - b.position);
   const shopCategories = categories.filter((c) => c.kind === "SHOP").sort((a, b) => a.position - b.position);
@@ -85,10 +85,7 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
     router.refresh();
   }
 
-  async function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  async function handleFileSelected(file: File) {
     setIsUploading(true);
     setUploadError(null);
 
@@ -97,7 +94,6 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
     const result = await uploadCategoryImageAction(formData);
 
     setIsUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
 
     if (!result.success || !result.url) {
       setUploadError(result.message ?? "Upload failed.");
@@ -159,33 +155,19 @@ export function CategoryManager({ categories }: { categories: Category[] }) {
 
           <div>
             <p className="mb-1.5 text-sm font-medium text-espresso">Image</p>
-            <div className="flex items-center gap-3">
-              <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl">
-                {draft.imageUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
+            {draft.imageUrl ? (
+              <div className="flex items-center gap-3">
+                <div className="h-16 w-16 shrink-0 overflow-hidden rounded-xl">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={draft.imageUrl} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  <ImagePlaceholder />
-                )}
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp,image/avif"
-                onChange={handleFileSelected}
-                disabled={isUploading}
-                className="hidden"
-                id="category-image-upload"
-              />
-              <Button type="button" variant="outline" disabled={isUploading} className="disabled:opacity-60" onClick={() => fileInputRef.current?.click()}>
-                {isUploading ? "Uploading…" : "Upload"}
-              </Button>
-              {draft.imageUrl && (
+                </div>
                 <button type="button" onClick={() => setDraft((d) => ({ ...d, imageUrl: "" }))} className="text-sm text-red-600">
                   Remove
                 </button>
-              )}
-            </div>
+              </div>
+            ) : (
+              <ImageDropzone onFileSelected={handleFileSelected} isUploading={isUploading} compact className="w-full" />
+            )}
             {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}
             <div className="mt-3">
               <TextField

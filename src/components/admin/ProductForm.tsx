@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import { ImageDropzone } from "@/components/ui/ImageDropzone";
 import { saveProduct } from "@/server/actions/admin-product-actions";
 import { uploadProductImageAction } from "@/server/actions/admin-upload-actions";
 import type { ProductInput } from "@/validation/admin-product";
@@ -79,7 +80,6 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
   const [images, setImages] = useState<ImageRow[]>(initialProduct?.images ?? []);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedModifierGroupIds, setSelectedModifierGroupIds] = useState<string[]>(
     initialProduct?.modifierGroupIds ?? [],
   );
@@ -115,10 +115,7 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
     setImages((rows) => rows.filter((_, i) => i !== index));
   }
 
-  async function handleFileSelected(event: ChangeEvent<HTMLInputElement>) {
-    const file = event.target.files?.[0];
-    if (!file) return;
-
+  async function handleFileSelected(file: File) {
     setIsUploading(true);
     setUploadError(null);
 
@@ -127,7 +124,6 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
     const result = await uploadProductImageAction(formData);
 
     setIsUploading(false);
-    if (fileInputRef.current) fileInputRef.current.value = "";
 
     if (!result.success || !result.url) {
       setUploadError(result.message ?? "Upload failed.");
@@ -354,34 +350,14 @@ export function ProductForm({ categories, modifierGroups, initialProduct }: Prod
       <section className="rounded-2xl border border-line bg-white p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="font-display text-xl text-espresso">Images</h2>
-          <div className="flex items-center gap-3">
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/avif"
-              onChange={handleFileSelected}
-              disabled={isUploading}
-              className="hidden"
-              id="image-upload-input"
-            />
-            <Button
-              type="button"
-              variant="brass"
-              disabled={isUploading}
-              className="disabled:opacity-60"
-              onClick={() => fileInputRef.current?.click()}
-            >
-              {isUploading ? "Uploading…" : "Upload image"}
-            </Button>
-            <Button type="button" variant="outline" onClick={() => setImages((rows) => [...rows, { url: "", altText: "" }])}>
-              Add URL instead
-            </Button>
-          </div>
+          <Button type="button" variant="outline" onClick={() => setImages((rows) => [...rows, { url: "", altText: "" }])}>
+            Add URL instead
+          </Button>
         </div>
+
+        <ImageDropzone onFileSelected={handleFileSelected} isUploading={isUploading} className="mt-4 w-full" />
         {uploadError && <p className="mt-2 text-sm text-red-600">{uploadError}</p>}
-        <p className="mt-1 text-sm text-espresso-soft">
-          Upload a file directly, or paste a hosted image URL (e.g. from the current site).
-        </p>
+
         <div className="mt-5 flex flex-col gap-3">
           {images.map((image, index) => (
             <div key={index} className="grid gap-3 sm:grid-cols-[2fr_1fr_auto] sm:items-end">
