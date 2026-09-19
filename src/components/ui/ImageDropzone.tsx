@@ -3,7 +3,10 @@
 import { useRef, useState, type DragEvent, type KeyboardEvent } from "react";
 import { clsx } from "clsx";
 
-const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/avif";
+// .heic/.heif extensions are included alongside the MIME types because
+// some browsers report an empty or generic MIME type for HEIC files (the
+// default format iPhones shoot in) — the server converts them to JPEG.
+const ACCEPTED_TYPES = "image/jpeg,image/png,image/webp,image/avif,image/heic,image/heif,.heic,.heif";
 
 interface ImageDropzoneProps {
   onFileSelected: (file: File) => void;
