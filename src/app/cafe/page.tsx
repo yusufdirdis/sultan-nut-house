@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { TOAST_ORDER_URL } from "@/lib/toast";
 
 const ADDRESS = "1836 N University Dr, Plantation, FL 33322";
 const DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
@@ -65,8 +66,8 @@ export default function CafePage() {
             ahead and skip the line.
           </p>
           <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <Button href="/order" variant="brass" size="lg">
-              Order Pickup
+            <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass" size="lg">
+              Order Cafe
             </Button>
             <Button href={DIRECTIONS_URL} variant="outline" size="lg">
               Get Directions

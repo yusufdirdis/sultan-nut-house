@@ -19,6 +19,8 @@ type ButtonOwnProps = {
   size?: keyof typeof sizes;
   href?: string;
   className?: string;
+  target?: string;
+  rel?: string;
 };
 
 export function Button<T extends ElementType = "button">({
@@ -26,6 +28,8 @@ export function Button<T extends ElementType = "button">({
   size = "md",
   href,
   className,
+  target,
+  rel,
   children,
   ...props
 }: ButtonOwnProps & ComponentPropsWithoutRef<T>) {
@@ -38,7 +42,7 @@ export function Button<T extends ElementType = "button">({
 
   if (href) {
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} target={target} rel={rel}>
         {children}
       </Link>
     );

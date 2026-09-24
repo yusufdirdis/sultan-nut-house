@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
+import { TOAST_ORDER_URL } from "@/lib/toast";
 
 const shopLinks = [
   { href: "/collections/nuts", label: "Nuts" },
@@ -12,7 +13,7 @@ const shopLinks = [
 const companyLinks = [
   { href: "/about", label: "Our Story" },
   { href: "/cafe", label: "Visit Us" },
-  { href: "/order", label: "Order Pickup" },
+  { href: TOAST_ORDER_URL, label: "Order Cafe" },
   { href: "/policies/contact-information", label: "Contact" },
 ];
 
@@ -69,13 +70,21 @@ function FooterColumn({ title, links }: { title: string; links: { href: string; 
     <div>
       <p className="text-xs font-semibold uppercase tracking-wider text-cream/50">{title}</p>
       <ul className="mt-4 space-y-2 text-sm">
-        {links.map((link) => (
-          <li key={link.href}>
-            <Link href={link.href} className="text-cream/70 transition-colors hover:text-cream">
-              {link.label}
-            </Link>
-          </li>
-        ))}
+        {links.map((link) => {
+          const isExternal = link.href.startsWith("http");
+          return (
+            <li key={link.href}>
+              <Link
+                href={link.href}
+                target={isExternal ? "_blank" : undefined}
+                rel={isExternal ? "noopener noreferrer" : undefined}
+                className="text-cream/70 transition-colors hover:text-cream"
+              >
+                {link.label}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </div>
   );

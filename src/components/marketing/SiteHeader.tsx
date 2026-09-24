@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { TOAST_ORDER_URL } from "@/lib/toast";
 
 const ADMIN_ROLES = ["MANAGER", "ADMIN", "SUPERADMIN"];
 
@@ -57,8 +58,8 @@ export function SiteHeader() {
           >
             <CartIcon />
           </Link>
-          <Button href="/order" variant="brass" size="md">
-            Order Pickup
+          <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass" size="md">
+            Order Cafe
           </Button>
         </div>
 
@@ -109,8 +110,8 @@ export function SiteHeader() {
                 Admin
               </Link>
             )}
-            <Button href="/order" variant="brass" size="lg" className="mt-2 w-full">
-              Order Pickup
+            <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass" size="lg" className="mt-2 w-full">
+              Order Cafe
             </Button>
           </Container>
         </div>
@@ -119,8 +120,8 @@ export function SiteHeader() {
       {/* Persistent mobile pickup CTA, per the brief's requirement that "Order
           Pickup" stays prominent on mobile even when the menu is collapsed. */}
       <div className="border-t border-line bg-cream-deep px-4 py-2 md:hidden">
-        <Button href="/order" variant="brass" size="md" className="w-full">
-          Order Pickup
+        <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass" size="md" className="w-full">
+          Order Cafe
         </Button>
       </div>
     </header>

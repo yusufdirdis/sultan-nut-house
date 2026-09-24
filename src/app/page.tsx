@@ -3,6 +3,7 @@ import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
 import { ReviewsCarousel } from "@/components/marketing/ReviewsCarousel";
 import { db } from "@/lib/db";
+import { TOAST_ORDER_URL } from "@/lib/toast";
 
 const categories = [
   { slug: "nuts", name: "Shop Nuts", blurb: "Slow-roasted, small-batch." },
@@ -33,8 +34,8 @@ export default async function Home() {
               cafe, or shop our nuts, sweets, and specialty goods shipped anywhere in the country.
             </p>
             <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-              <Button href="/order" variant="primary" size="lg">
-                Order Pickup
+              <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="primary" size="lg">
+                Order Cafe
               </Button>
               <Button href="/shop" variant="outline" size="lg">
                 Shop Online
@@ -50,9 +51,10 @@ export default async function Home() {
           <PathCard
             eyebrow="Near the cafe?"
             title="Order from the cafe"
-            description="Coffee, matcha, kunafa, baklava, and fresh-made pastries — order ahead and pick up at 1836 N University Dr."
+            description="Coffee, matcha, kunafa, baklava, and fresh-made pastries — order ahead for pickup or delivery at 1836 N University Dr."
             cta="Order From The Cafe"
-            href="/order"
+            href={TOAST_ORDER_URL}
+            external
             tone="brass"
           />
           <PathCard
@@ -140,8 +142,8 @@ export default async function Home() {
               </div>
             </dl>
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button href="/order" variant="brass">
-                Order Pickup
+              <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass">
+                Order Cafe
               </Button>
               <Button href="/cafe" variant="outline">
                 Directions & Hours
@@ -177,6 +179,7 @@ function PathCard({
   description,
   cta,
   href,
+  external,
   tone,
 }: {
   eyebrow: string;
@@ -184,6 +187,7 @@ function PathCard({
   description: string;
   cta: string;
   href: string;
+  external?: boolean;
   tone: "brass" | "pistachio";
 }) {
   return (
@@ -195,7 +199,14 @@ function PathCard({
         <h3 className="font-display mt-4 text-3xl text-espresso">{title}</h3>
         <p className="mt-4 max-w-md text-espresso-soft leading-relaxed">{description}</p>
       </div>
-      <Button href={href} variant={tone === "brass" ? "brass" : "primary"} size="lg" className="w-fit">
+      <Button
+        href={href}
+        target={external ? "_blank" : undefined}
+        rel={external ? "noopener noreferrer" : undefined}
+        variant={tone === "brass" ? "brass" : "primary"}
+        size="lg"
+        className="w-fit"
+      >
         {cta}
       </Button>
     </div>
