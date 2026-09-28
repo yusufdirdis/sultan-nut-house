@@ -23,6 +23,7 @@ export default async function AdminShippingOrdersPage() {
                   <p className="mt-1 text-sm text-espresso-soft">
                     {order.shippingAddress.recipientName}, {order.shippingAddress.line1}, {order.shippingAddress.city},{" "}
                     {order.shippingAddress.state} {order.shippingAddress.postalCode}
+                    {order.shippingAddress.phone && <> · {order.shippingAddress.phone}</>}
                   </p>
                 )}
                 <ul className="mt-2 text-sm text-espresso-soft">
