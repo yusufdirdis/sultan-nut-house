@@ -138,8 +138,22 @@ export async function handleStripeWebhookEvent(event: Stripe.Event): Promise<voi
     }
 
     case "payment_intent.payment_failed": {
-      const intent = event.data.object as Stripe.PaymentIntent;
-      const orderId = intent.metadata?.orderId;
+      // Deliberately not cancelling the order here. A failed attempt (e.g. a
+      // declined card) is not terminal — Stripe Checkout lets the customer
+      // retry with a different payment method on the *same* session, and a
+      // `checkout.session.completed` for the same orderId can still follow
+      // seconds later. Cancelling on the first failure raced a real
+      // customer's successful retry: their payment succeeded, but
+      // markOrderPaidAndFulfill's guard (status must be PENDING_PAYMENT) was
+      // already tripped by the cancellation, so the order silently never
+      // got marked paid. `checkout.session.expired` below is the actual
+      // terminal signal for an abandoned Checkout Session.
+      break;
+    }
+
+    case "checkout.session.expired": {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const orderId = session.metadata?.orderId;
       if (orderId) {
         await db.order.updateMany({ where: { id: orderId, status: "PENDING_PAYMENT" }, data: { status: "CANCELLED" } });
       }
