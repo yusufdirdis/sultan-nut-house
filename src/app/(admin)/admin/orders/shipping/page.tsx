@@ -1,5 +1,6 @@
 import { listShippingOrders } from "@/server/actions/admin-order-actions";
 import { formatCents } from "@/lib/money";
+import { Button } from "@/components/ui/Button";
 import { ShippingOrderActions } from "@/components/admin/ShippingOrderActions";
 
 export default async function AdminShippingOrdersPage() {
@@ -51,7 +52,13 @@ export default async function AdminShippingOrdersPage() {
               </div>
 
               <div className="flex flex-col items-end gap-3">
-                <p className="font-medium text-espresso">{formatCents(order.totalCents)}</p>
+                <div className="text-right">
+                  <p className="font-medium text-espresso">{formatCents(order.totalCents)}</p>
+                  {order.refundedCents > 0 && <p className="text-xs text-espresso-soft">{formatCents(order.refundedCents)} refunded</p>}
+                </div>
+                <Button href={`/admin/orders/${order.id}`} size="md" variant="outline">
+                  Edit order
+                </Button>
                 {order.status === "PAID" && (
                   <ShippingOrderActions orderId={order.id} hasRate={Boolean(order.shippoRateId)} alreadyLabeled={Boolean(order.labelUrl)} />
                 )}

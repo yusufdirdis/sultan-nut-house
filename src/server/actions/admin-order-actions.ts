@@ -12,7 +12,7 @@ import type { OrderStatus } from "@/generated/prisma/enums";
 export async function listShippingOrders() {
   await requireAdmin();
   return db.order.findMany({
-    where: { fulfillmentType: "SHIPPING", status: { in: ["PAID", "PROCESSING", "PACKING", "SHIPPED", "DELIVERED"] } },
+    where: { fulfillmentType: "SHIPPING", status: { in: ["PAID", "PROCESSING", "PACKING", "SHIPPED", "DELIVERED", "REFUNDED"] } },
     include: { items: true, shippingAddress: true },
     orderBy: { createdAt: "desc" },
   });
@@ -21,7 +21,7 @@ export async function listShippingOrders() {
 export async function listPickupOrders() {
   await requireAdmin();
   return db.order.findMany({
-    where: { fulfillmentType: "PICKUP", status: { in: ["PAID", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "COMPLETED"] } },
+    where: { fulfillmentType: "PICKUP", status: { in: ["PAID", "CONFIRMED", "PREPARING", "READY_FOR_PICKUP", "COMPLETED", "REFUNDED"] } },
     include: { items: true },
     orderBy: { createdAt: "desc" },
   });

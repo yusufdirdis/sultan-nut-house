@@ -1,5 +1,6 @@
 import { listPickupOrders } from "@/server/actions/admin-order-actions";
 import { formatCents } from "@/lib/money";
+import { Button } from "@/components/ui/Button";
 import { OrderStatusAdvanceButton } from "@/components/admin/OrderStatusAdvanceButton";
 
 export default async function AdminPickupOrdersPage() {
@@ -34,7 +35,13 @@ export default async function AdminPickupOrdersPage() {
             </div>
 
             <div className="flex flex-col items-end gap-3">
-              <p className="font-medium text-espresso">{formatCents(order.totalCents)}</p>
+              <div className="text-right">
+                <p className="font-medium text-espresso">{formatCents(order.totalCents)}</p>
+                {order.refundedCents > 0 && <p className="text-xs text-espresso-soft">{formatCents(order.refundedCents)} refunded</p>}
+              </div>
+              <Button href={`/admin/orders/${order.id}`} size="md" variant="outline">
+                Edit order
+              </Button>
               <OrderStatusAdvanceButton orderId={order.id} status={order.status} />
             </div>
           </div>

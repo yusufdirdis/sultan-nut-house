@@ -164,8 +164,18 @@ export async function handleStripeWebhookEvent(event: Stripe.Event): Promise<voi
       const charge = event.data.object as Stripe.Charge;
       const paymentIntentId = typeof charge.payment_intent === "string" ? charge.payment_intent : charge.payment_intent?.id;
       if (paymentIntentId) {
-        await db.order.updateMany({ where: { stripePaymentIntentId: paymentIntentId }, data: { status: "REFUNDED" } });
-        await db.payment.updateMany({ where: { stripePaymentIntentId: paymentIntentId }, data: { status: "REFUNDED" } });
+        // Fires for partial refunds too — only a refund covering the whole
+        // charge makes the order REFUNDED; a partial one (e.g. a single item)
+        // must leave a still-to-ship order in the shipping queue.
+        const fullyRefunded = charge.amount_refunded >= charge.amount;
+        await db.order.updateMany({
+          where: { stripePaymentIntentId: paymentIntentId },
+          data: { refundedCents: charge.amount_refunded, ...(fullyRefunded ? { status: "REFUNDED" } : {}) },
+        });
+        await db.payment.updateMany({
+          where: { stripePaymentIntentId: paymentIntentId },
+          data: { status: fullyRefunded ? "REFUNDED" : "PARTIALLY_REFUNDED" },
+        });
       }
       break;
     }

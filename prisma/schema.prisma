@@ -457,8 +457,14 @@ model Order {
   totalCents              Int
   stripePaymentIntentId   String?                @unique
   stripeCheckoutSessionId String?                @unique
+  /// Running total refunded to the customer's card. Kept in sync with Stripe's
+  /// charge.amount_refunded by both the admin refund action and the
+  /// charge.refunded webhook, so refunds issued in Stripe's own dashboard
+  /// are reflected here too.
+  refundedCents           Int                    @default(0)
   items                   OrderItem[]
   payments                Payment[]
+  refunds                 Refund[]
   discounts               OrderDiscount[]
   placedAt                DateTime?
   notes                   String?
@@ -484,6 +490,9 @@ model OrderItem {
   productNameSnapshot    String
   variantNameSnapshot    String
   quantity               Int
+  /// Units of this line already refunded (item-level refunds), so the same
+  /// unit can't be refunded twice.
+  refundedQuantity       Int                 @default(0)
   unitPriceCentsSnapshot Int
   notes                  String?
   modifiers              OrderItemModifier[]
@@ -514,6 +523,27 @@ model Payment {
   status                PaymentStatus
   createdAt             DateTime        @default(now())
   updatedAt             DateTime        @updatedAt
+
+  @@index([orderId])
+}
+
+/// One row per refund issued from the admin panel. Refunds made directly in
+/// Stripe's dashboard aren't rows here (they only update Order.refundedCents).
+model Refund {
+  id             String   @id @default(cuid())
+  orderId        String
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  stripeRefundId String   @unique
+  amountCents    Int
+  /// Portions of amountCents that were shipping and tax — for display.
+  shippingCents  Int      @default(0)
+  taxCents       Int      @default(0)
+  reason         String?
+  note           String?
+  /// [{ orderItemId, name, quantity }] for item-level refunds.
+  lines          Json?
+  actorUserId    String?
+  createdAt      DateTime @default(now())
 
   @@index([orderId])
 }
