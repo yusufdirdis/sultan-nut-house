@@ -9,7 +9,7 @@ const categories = [
   { slug: "nuts", name: "Shop Nuts", blurb: "Slow-roasted, small-batch." },
   { slug: "turkish-delights", name: "Turkish Delights", blurb: "Rosewater, pistachio, pomegranate." },
   { slug: "candies", name: "Gummies & Candy", blurb: "Halal-certified favorites." },
-  { slug: "tea-coffee", name: "Tea & Coffee", blurb: "Turkish coffee, loose-leaf tea." },
+  { slug: "fresh-roasted-coffee", name: "Fresh Roasted Coffee", blurb: "Turkish coffee and fresh roasts." },
 ];
 
 export default async function Home() {

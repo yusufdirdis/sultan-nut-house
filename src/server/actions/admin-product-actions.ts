@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth-guards";
 import { AppError, toSafeError } from "@/lib/errors";
+import { revalidateStorefront } from "@/lib/revalidate-storefront";
 import { productInputSchema, type ProductInput } from "@/validation/admin-product";
 import type { ActionResult } from "@/server/actions/auth-actions";
 
@@ -164,6 +165,7 @@ export async function saveProduct(input: ProductInput): Promise<ActionResult & {
 
     revalidatePath("/admin/products");
     revalidatePath(`/admin/products/${product.id}/edit`);
+    revalidateStorefront();
 
     return { success: true, message: "Product saved.", productId: product.id };
   } catch (error) {
@@ -189,6 +191,7 @@ export async function setProductStatus(productId: string, status: "ACTIVE" | "DR
     });
 
     revalidatePath("/admin/products");
+    revalidateStorefront();
     return { success: true, message: status === "ARCHIVED" ? "Product archived." : "Product updated." };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't update this product.");
@@ -218,6 +221,7 @@ export async function deleteProduct(productId: string): Promise<ActionResult> {
     });
 
     revalidatePath("/admin/products");
+    revalidateStorefront();
     return { success: true, message: "Product deleted." };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't delete this product.");

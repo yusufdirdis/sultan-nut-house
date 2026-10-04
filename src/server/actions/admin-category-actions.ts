@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth-guards";
 import { AppError, toSafeError } from "@/lib/errors";
+import { revalidateStorefront } from "@/lib/revalidate-storefront";
 import { categoryInputSchema, type CategoryInput } from "@/validation/admin-category";
 import type { ActionResult } from "@/server/actions/auth-actions";
 
@@ -45,6 +46,7 @@ export async function saveCategory(input: CategoryInput): Promise<ActionResult> 
     });
 
     revalidatePath("/admin/categories");
+    revalidateStorefront();
     return { success: true, message: "Category saved." };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't save this category.");
@@ -72,6 +74,7 @@ export async function moveCategory(categoryId: string, direction: "up" | "down")
     ]);
 
     revalidatePath("/admin/categories");
+    revalidateStorefront();
     return { success: true, message: "Reordered." };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't reorder this category.");
@@ -98,6 +101,7 @@ export async function deleteCategory(categoryId: string): Promise<ActionResult> 
     });
 
     revalidatePath("/admin/categories");
+    revalidateStorefront();
     return { success: true, message: "Category deleted." };
   } catch (error) {
     const safeError = toSafeError(error, "We couldn't delete this category.");

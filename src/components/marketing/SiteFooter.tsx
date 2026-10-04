@@ -6,8 +6,8 @@ const shopLinks = [
   { href: "/collections/nuts", label: "Nuts" },
   { href: "/collections/turkish-delights", label: "Turkish Delights" },
   { href: "/collections/candies", label: "Gummies & Candy" },
-  { href: "/collections/tea-coffee", label: "Tea & Coffee" },
-  { href: "/collections/gift-ideas", label: "Gift Boxes" },
+  { href: "/collections/fresh-roasted-coffee", label: "Coffee" },
+  { href: "/collections/baklava", label: "Baklava" },
 ];
 
 const companyLinks = [
