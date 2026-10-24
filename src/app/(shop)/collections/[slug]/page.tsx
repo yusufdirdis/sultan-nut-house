@@ -4,6 +4,14 @@ import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/shop/ProductCard";
 
+// Built on first visit and served from cache — refreshed at most hourly, and
+// immediately on any admin catalog change (see revalidateStorefront).
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return [];
+}
+
 async function getCategory(slug: string) {
   return db.category.findUnique({ where: { slug } });
 }

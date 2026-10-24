@@ -7,6 +7,17 @@ import { AddToCartForm } from "@/components/shop/AddToCartForm";
 import { ImagePlaceholder } from "@/components/ui/ImagePlaceholder";
 import { formatCentsRange } from "@/lib/money";
 
+// Each product page is built on its first visit and then served from cache,
+// so browsing (and search-engine crawlers) don't hit the database on every
+// view. It's refreshed at most hourly, and immediately whenever a product or
+// category is changed in admin (see revalidateStorefront). Prices can't go
+// stale at checkout: the cart re-reads them from the database.
+export const revalidate = 3600;
+
+export async function generateStaticParams() {
+  return [];
+}
+
 async function getProduct(slug: string) {
   return db.product.findUnique({
     where: { slug },

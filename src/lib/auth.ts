@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { CredentialsSignin } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -9,6 +9,14 @@ const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8),
 });
+
+// Auth.js only passes an error back to the browser if it's a CredentialsSignin
+// (as `code`). A plain `throw new Error(...)` from authorize() is reported as a
+// generic "Configuration" error instead, which the login page can't tell apart
+// from a server failure.
+class EmailNotVerified extends CredentialsSignin {
+  code = "email_not_verified";
+}
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   // Credentials provider only supports the JWT session strategy in Auth.js —
@@ -35,7 +43,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!isValidPassword) return null;
 
         if (!user.emailVerified) {
-          throw new Error("EMAIL_NOT_VERIFIED");
+          throw new EmailNotVerified();
         }
 
         return {

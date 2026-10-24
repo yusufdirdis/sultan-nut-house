@@ -34,10 +34,16 @@ function LoginForm() {
     const result = await signIn("credentials", { email, password, redirect: false });
 
     if (result?.error) {
+      // "CredentialsSignin" is the only error that means the details were
+      // checked and rejected. Anything else (e.g. the database being
+      // unreachable) is our problem, not a wrong password — saying "wrong
+      // password" there sends people off resetting a password that's fine.
       setError(
-        result.error === "EMAIL_NOT_VERIFIED"
+        result.code === "email_not_verified"
           ? "Please verify your email before signing in — check your inbox for the link."
-          : "That email or password isn't right. Please try again.",
+          : result.error === "CredentialsSignin"
+            ? "That email or password isn't right. Please try again."
+            : "We couldn't sign you in right now because of a problem on our end. Please try again in a few minutes.",
       );
       setIsSubmitting(false);
       return;
