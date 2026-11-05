@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
@@ -22,9 +23,19 @@ export function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-cream/90 backdrop-blur">
-      <Container className="flex h-16 items-center justify-between py-3">
-        <Link href="/" className="font-display text-xl tracking-tight text-espresso">
-          Sultan Nut House
+      <Container className="flex h-20 items-center justify-between py-3 md:h-24">
+        <Link href="/" aria-label="Sultan Nut House — home" className="flex shrink-0 items-center">
+          {/* width/height are the desktop display size (the file is 800px wide), so
+              Next serves small 1x/2x versions instead of the full-size original. */}
+          <Image
+            src="/logo.png"
+            alt="Sultan Nut House"
+            width={89}
+            height={72}
+            loading="eager"
+            fetchPriority="high"
+            className="h-14 w-auto md:h-[4.5rem]"
+          />
         </Link>
 
         <nav className="hidden items-center gap-8 text-sm font-medium text-espresso-soft md:flex">
