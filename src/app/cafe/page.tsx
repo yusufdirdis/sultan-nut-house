@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     "Visit Sultan Nut House, a Middle Eastern cafe and specialty goods shop in Plantation, FL. Order ahead for pickup — Turkish coffee, kunafa, baklava, and more.",
 };
 
-const hours = [{ label: "Every day", value: "9:00 AM – 9:00 PM" }];
+const hours = [{ label: "Every day", value: "10:00 AM – 11:00 PM" }];
 
 function categoryGradient(seed: number) {
   const palettes = [
@@ -42,8 +42,8 @@ export default function CafePage() {
       {
         "@type": "OpeningHoursSpecification",
         dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-        opens: "09:00",
-        closes: "21:00",
+        opens: "10:00",
+        closes: "23:00",
       },
     ],
     url: "https://sultannuthouse.com/cafe",

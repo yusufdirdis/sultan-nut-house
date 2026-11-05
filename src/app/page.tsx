@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { CafeMap } from "@/components/marketing/CafeMap";
 import { ReviewsCarousel } from "@/components/marketing/ReviewsCarousel";
 import { db } from "@/lib/db";
+import { CAFE_DIRECTIONS_URL } from "@/lib/cafe";
 import { isOptimizableImage } from "@/lib/images";
 import { TOAST_ORDER_URL } from "@/lib/toast";
 
@@ -110,15 +111,15 @@ export default async function Home() {
             <dl className="mt-8 space-y-2 text-sm text-espresso-soft">
               <div className="flex gap-3">
                 <dt className="w-28 shrink-0 font-medium text-espresso">Every day</dt>
-                <dd>9:00 AM – 9:00 PM</dd>
+                <dd>10:00 AM – 11:00 PM</dd>
               </div>
             </dl>
             <div className="mt-8 flex flex-wrap gap-4">
               <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass">
                 Order Cafe
               </Button>
-              <Button href="/cafe" variant="outline">
-                Directions & Hours
+              <Button href={CAFE_DIRECTIONS_URL} target="_blank" rel="noopener noreferrer" variant="outline">
+                Get Directions
               </Button>
             </div>
           </div>
