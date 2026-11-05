@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { Container } from "@/components/ui/Container";
 import { ProductCard } from "@/components/shop/ProductCard";
-import { CategoryCard } from "@/components/shop/CategoryCard";
+import { CategoryStrip } from "@/components/shop/CategoryStrip";
 
 export const metadata = { title: "Shop" };
 
@@ -23,13 +23,9 @@ export default async function ShopPage() {
         <p className="mt-3 text-espresso-soft">Packed fresh and shipped anywhere in the US.</p>
       </div>
 
-      {categories.length > 0 && (
-        <div className="mt-10 flex gap-5 overflow-x-auto pb-2">
-          {categories.map((category) => (
-            <CategoryCard key={category.id} slug={category.slug} name={category.name} imageUrl={category.imageUrl} />
-          ))}
-        </div>
-      )}
+      <div className="mt-10">
+        <CategoryStrip categories={categories} />
+      </div>
 
       <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {products.map((product) => (
