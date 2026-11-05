@@ -11,7 +11,7 @@ import { TOAST_ORDER_URL } from "@/lib/toast";
 const ADMIN_ROLES = ["MANAGER", "ADMIN", "SUPERADMIN"];
 
 const navLinks = [
-  { href: "/shop", label: "Shop" },
+  { href: "/shop", label: "Shop Online" },
 ];
 
 export function SiteHeader() {
@@ -38,13 +38,13 @@ export function SiteHeader() {
             />
           </Link>
 
-          <nav className="hidden items-center gap-8 text-lg font-medium text-espresso-soft md:flex">
-            {navLinks.map((link) => (
-              <Link key={link.href} href={link.href} className="transition-colors hover:text-espresso">
-                {link.label}
-              </Link>
-            ))}
-          </nav>
+          {/* Same pill shape and size as "Order Cafe" on the right, in the dark
+              espresso colour so the two read as a pair. */}
+          <div className="hidden md:block">
+            <Button href="/shop" variant="primary" size="md">
+              Shop Online
+            </Button>
+          </div>
         </div>
 
         <div className="hidden items-center gap-3 md:flex">
