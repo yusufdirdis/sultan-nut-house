@@ -166,7 +166,11 @@ function PathCard({
   tone: "brass" | "pistachio";
 }) {
   return (
-    <div className="flex flex-col justify-between gap-8 py-16 pr-0 lg:pr-12">
+    // On wide screens the two cards sit side by side with a divider line between them
+    // (lg:divide-x above): the first keeps its right padding, the second needs the same
+    // space on its left so its text doesn't touch the line. The first card's left edge
+    // stays flush with the rest of the page.
+    <div className="flex flex-col justify-between gap-8 py-16 pr-0 lg:pl-12 lg:pr-12 lg:first:pl-0">
       <div>
         <p className={tone === "brass" ? "text-xs font-semibold uppercase tracking-[0.25em] text-brass" : "text-xs font-semibold uppercase tracking-[0.25em] text-pistachio"}>
           {eyebrow}
