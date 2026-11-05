@@ -100,31 +100,6 @@ export default async function Home() {
         </Container>
       </section>
 
-      {/* ------------------------------------------------------- Sultan story */}
-      <section className="border-y border-line bg-cream-deep py-24">
-        <Container className="grid items-center gap-12 lg:grid-cols-2">
-          <div
-            aria-hidden
-            className="h-80 w-full rounded-2xl"
-            style={{ background: categoryGradient(4) }}
-          />
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-brass">Our story</p>
-            <h2 className="font-display mt-4 text-3xl text-espresso sm:text-4xl">
-              Three generations of roasting, brewing, and hospitality.
-            </h2>
-            <p className="mt-5 max-w-lg text-espresso-soft leading-relaxed">
-              Sultan Nut House began as a family tradition of sourcing the finest nuts, sweets, and coffee from
-              across the Middle East — now roasted, brewed, and packed fresh in Plantation, Florida, and shared with
-              guests near and far.
-            </p>
-            <Button href="/about" variant="ghost" className="mt-6 px-0 hover:bg-transparent hover:underline">
-              Read our story &rarr;
-            </Button>
-          </div>
-        </Container>
-      </section>
-
       {/* ---------------------------------------------------------- Visit us */}
       <section className="py-24">
         <Container className="grid gap-12 lg:grid-cols-2">

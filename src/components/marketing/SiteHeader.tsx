@@ -12,7 +12,6 @@ const ADMIN_ROLES = ["MANAGER", "ADMIN", "SUPERADMIN"];
 
 const navLinks = [
   { href: "/shop", label: "Shop" },
-  { href: "/about", label: "Our Story" },
   { href: "/cafe", label: "Visit Us" },
 ];
 

@@ -11,7 +11,6 @@ const shopLinks = [
 ];
 
 const companyLinks = [
-  { href: "/about", label: "Our Story" },
   { href: "/cafe", label: "Visit Us" },
   { href: TOAST_ORDER_URL, label: "Order Cafe" },
   { href: "/policies/contact-information", label: "Contact" },
