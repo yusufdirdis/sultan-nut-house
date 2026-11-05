@@ -1,11 +1,9 @@
 import type { Metadata } from "next";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { CafeMap } from "@/components/marketing/CafeMap";
+import { CAFE_DIRECTIONS_URL } from "@/lib/cafe";
 import { TOAST_ORDER_URL } from "@/lib/toast";
-
-const ADDRESS = "1836 N University Dr, Plantation, FL 33322";
-const DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ADDRESS)}`;
-const MAP_EMBED_URL = `https://maps.google.com/maps?q=${encodeURIComponent(ADDRESS)}&z=15&output=embed`;
 
 export const metadata: Metadata = {
   title: "Visit Us",
@@ -69,7 +67,7 @@ export default function CafePage() {
             <Button href={TOAST_ORDER_URL} target="_blank" rel="noopener noreferrer" variant="brass" size="lg">
               Order Cafe
             </Button>
-            <Button href={DIRECTIONS_URL} variant="outline" size="lg">
+            <Button href={CAFE_DIRECTIONS_URL} variant="outline" size="lg">
               Get Directions
             </Button>
           </div>
@@ -95,7 +93,7 @@ export default function CafePage() {
             </dl>
 
             <div className="mt-8 flex flex-wrap gap-4">
-              <Button href={DIRECTIONS_URL} variant="brass">
+              <Button href={CAFE_DIRECTIONS_URL} variant="brass">
                 Get Directions
               </Button>
               <Button href="/policies/contact-information" variant="ghost">
@@ -111,13 +109,7 @@ export default function CafePage() {
           </div>
 
           <div className="mt-10 aspect-square w-full overflow-hidden rounded-2xl border border-line lg:mt-0 lg:aspect-auto">
-            <iframe
-              title="Map to Sultan Nut House"
-              src={MAP_EMBED_URL}
-              className="h-full min-h-[320px] w-full"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+            <CafeMap />
           </div>
         </Container>
       </section>

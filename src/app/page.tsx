@@ -1,8 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Container } from "@/components/ui/Container";
 import { Button } from "@/components/ui/Button";
+import { CafeMap } from "@/components/marketing/CafeMap";
 import { ReviewsCarousel } from "@/components/marketing/ReviewsCarousel";
 import { db } from "@/lib/db";
+import { isOptimizableImage } from "@/lib/images";
 import { TOAST_ORDER_URL } from "@/lib/toast";
 
 const categories = [
@@ -13,7 +16,15 @@ const categories = [
 ];
 
 export default async function Home() {
-  const reviews = await db.review.findMany({ where: { isVisible: true }, orderBy: { position: "asc" } });
+  const [reviews, categoryPhotos] = await Promise.all([
+    db.review.findMany({ where: { isVisible: true }, orderBy: { position: "asc" } }),
+    // The tiles use each category's own photo (set in Admin → Categories).
+    db.category.findMany({
+      where: { kind: "SHOP", isVisible: true, slug: { in: categories.map((c) => c.slug) } },
+      select: { slug: true, imageUrl: true },
+    }),
+  ]);
+  const photoBySlug = new Map(categoryPhotos.map((c) => [c.slug, c.imageUrl]));
 
   return (
     <>
@@ -80,21 +91,7 @@ export default async function Home() {
 
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {categories.map((category, index) => (
-              <Link
-                key={category.slug}
-                href={`/collections/${category.slug}`}
-                className="group block overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-lg hover:shadow-espresso/5"
-              >
-                <div
-                  aria-hidden
-                  className="h-48 w-full"
-                  style={{ background: categoryGradient(index) }}
-                />
-                <div className="p-5">
-                  <p className="font-display text-lg text-espresso">{category.name}</p>
-                  <p className="mt-1 text-sm text-espresso-soft">{category.blurb}</p>
-                </div>
-              </Link>
+              <CategoryTile key={category.slug} category={category} photo={photoBySlug.get(category.slug)} index={index} />
             ))}
           </div>
         </Container>
@@ -125,11 +122,9 @@ export default async function Home() {
               </Button>
             </div>
           </div>
-          <div
-            aria-hidden
-            className="h-80 w-full rounded-2xl border border-line"
-            style={{ background: categoryGradient(5) }}
-          />
+          <div className="h-80 w-full overflow-hidden rounded-2xl border border-line">
+            <CafeMap />
+          </div>
         </Container>
       </section>
 
@@ -145,6 +140,43 @@ export default async function Home() {
         </section>
       )}
     </>
+  );
+}
+
+function CategoryTile({
+  category,
+  photo,
+  index,
+}: {
+  category: { slug: string; name: string; blurb: string };
+  photo?: string | null;
+  index: number;
+}) {
+  return (
+    <Link
+      href={`/collections/${category.slug}`}
+      className="group block overflow-hidden rounded-2xl border border-line bg-white transition-shadow hover:shadow-lg hover:shadow-espresso/5"
+    >
+      <div className="relative h-48 w-full overflow-hidden">
+        {photo ? (
+          // alt is empty on purpose: the category name right below is the link's text.
+          <Image
+            src={photo}
+            alt=""
+            fill
+            sizes="(min-width: 1024px) 25vw, (min-width: 640px) 50vw, 100vw"
+            unoptimized={!isOptimizableImage(photo)}
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        ) : (
+          <div aria-hidden className="h-full w-full" style={{ background: categoryGradient(index) }} />
+        )}
+      </div>
+      <div className="p-5">
+        <p className="font-display text-lg text-espresso">{category.name}</p>
+        <p className="mt-1 text-sm text-espresso-soft">{category.blurb}</p>
+      </div>
+    </Link>
   );
 }
 

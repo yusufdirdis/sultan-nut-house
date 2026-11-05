@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 // wouldn't show up on the live site until the cache expired or the next
 // deploy.
 export function revalidateStorefront() {
+  revalidatePath("/"); // the homepage's category tiles show each category's photo
   revalidatePath("/shop");
   revalidatePath("/(shop)/products/[slug]", "page");
   revalidatePath("/(shop)/collections/[slug]", "page");
